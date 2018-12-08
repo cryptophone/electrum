@@ -192,7 +192,7 @@ class Plugins(DaemonThread):
         try:
             module = zipfile.load_module(name)
         except zipimport.ZipImportError:
-            self.print_error("unable to load zip plugin '%s' package '%s'" % (plugin_file_path, name), str(e))
+            self.print_error("unable to load zip plugin '%s' package '%s'" % (plugin_file_path, name))
             return
             
         sys.modules['electroncash_external_plugins.'+ name] = module
@@ -280,11 +280,11 @@ class Plugins(DaemonThread):
         file_name = os.path.basename(plugin_file_path)
         try:
             zipfile = zipimport.zipimporter(plugin_file_path)
-        except zipimport.ZipImportError:
-            self.print_error("unable to load zip plugin for %s" % file_name)
+        except zipimport.ZipImportError as e:
+            self.print_error("unable to load zip plugin for %s." % str(e))
             return None                
         try:
-            metadata_text = zipfile.get_data("manifest.json")
+            metadata_text = zipfile.get_data("manifest.json").decode()
         except OSError:
             self.print_error("missing 'manifest.json' (zip plugin %s)" % file_name)
             return None                
